@@ -118,13 +118,33 @@ class Cooperative:
                 discharged_energy = storage.discharge(remaining_to_discharge)
                 remaining_to_discharge -= discharged_energy
 
-        # Update token balance
-        # 1. Subtract cost of grid purchases
-        self.community_token_balance -= energy_bought_from_grid * grid_price
-        # 2. Add income from grid sales
-        self.community_token_balance += energy_sold_to_grid * sale_price
-        # 3. Add income from P2P sales (if implemented)
-        self.community_token_balance += energy_added_to_storage * p2p_base_price
+            # 1. Mint tokens based on renewable energy consumption
+            renewable_consumption = min(consumption, production)
+            minted_tokens = renewable_consumption * token_mint_rate
+            self.community_token_balance += minted_tokens
+
+            # 2. Add tokens for energy added to storage (P2P)
+            self.community_token_balance += energy_added_to_storage * p2p_base_price
+
+            # 3. Add tokens from grid sales
+            self.community_token_balance += energy_sold_to_grid * sale_price
+
+            # 4. Subtract tokens for energy taken from storage
+            self.community_token_balance -= energy_bought_from_storages * p2p_base_price
+
+            # 5. Handle grid purchases with token burning
+            required_tokens = energy_bought_from_grid * grid_price
+            if self.community_token_balance >= required_tokens:
+                # Subtract cost of grid purchases
+                self.community_token_balance -= required_tokens
+                # Burn tokens for grid energy
+                burned_tokens = energy_bought_from_grid * token_burn_rate
+                self.community_token_balance -= burned_tokens
+            else:
+                # If not enough tokens, buy only what's affordable
+                affordable_energy = self.community_token_balance / grid_price if grid_price > 0 else 0
+                energy_bought_from_grid = affordable_energy
+                self.community_token_balance = 0
 
         # Log the negotiation details
         log_entry = f"=== Current step: {date} ===\n"
