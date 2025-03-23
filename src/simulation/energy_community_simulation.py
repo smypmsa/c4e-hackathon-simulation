@@ -63,11 +63,12 @@ if __name__ == "__main__":
     # Load grid costs
     grid_costs = load_grid_costs(sys.argv[4])
     
-    p2p_base_price = 0.5
+    p2p_base_price = 0.2
     min_price = 0.2
     token_mint_rate = 0.1
     token_burn_rate = 0.1
     
+    print(hourly_data)
     cooperative.simulate(len(hourly_data), p2p_base_price, min_price, token_mint_rate, token_burn_rate, hourly_data, grid_costs)
     
     results_dir = Path("results")
