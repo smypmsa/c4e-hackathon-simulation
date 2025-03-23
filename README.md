@@ -1,3 +1,7 @@
+# UPDATED: ADDED CALL TO LOCAL FETCH.AI AGENT TO GET DECISION
+---
+---
+
 # energy-ai-agents-simulation/README.md
 
 # Energy AI Agents Simulation
